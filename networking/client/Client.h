@@ -5,10 +5,11 @@
  * @Project: Anycast
  * @Filename: Client.h
  * @Last modified by:   andy
- * @Last modified time: 2017-03-20T23:14:40-04:00
+ * @Last modified time: 2017-03-28T20:32:15-04:00
  */
 #include "../common/TCPConnector.h"
 #include "../common/TCPSocket.h"
+#include "../common/Packet.h"
 #include<iostream>
 #include<string>
 #include<netdb.h>
@@ -39,19 +40,13 @@ public:
 int main(int argc, char const *argv[]) {
     Client * client = new Client(argv[1], atoi(argv[2]));
     TCPSocket *sock = client->connect();
+    Packet *packet = new Packet();
+    packet->data = "test from client";
+    std::string value = packet->to_string();
 
-    std::string diff="test from client";
-
-    int len = sock->send(diff.c_str(), diff.length());
+    int len = sock->send(value.c_str(), value.length());
     if(len > 0){
         std::cout<<"Client - \n\t +message sent successfully\n";
-    }
-
-    char message[256];
-    memset(message, '\0', 256);
-
-    while((len = sock->receive(message, sizeof(message))) > 0){
-        std::cout<<"Client - \n\t +message received from server ["<<message<<"]"<<std::endl;
     }
 
     delete sock;

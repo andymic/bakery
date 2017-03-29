@@ -5,11 +5,12 @@
  * @Project: Anycast
  * @Filename: Server.h
  * @Last modified by:   andy
- * @Last modified time: 2017-03-20T23:14:21-04:00
+ * @Last modified time: 2017-03-28T20:03:56-04:00
  */
 
 #include "../common/TCPConnector.h"
 #include "../common/TCPSocket.h"
+#include "../common/Packet.h"
 #include<iostream>
 // #include <netinet/in.h>
 #include <stdlib.h>
@@ -29,17 +30,25 @@ int main(int argc, char const *argv[]) {
 
     Server * srv = new Server(argv[1], atoi(argv[2]));
     srv->connect();
-    std::string response = "I got your message";
+
     while(true){
         TCPSocket* sock = srv->accept();
         int len;
-        char message [256];
-        memset(message, '\0', 256);
-        while((len = sock->receive(message, sizeof(message))) > 0){
-            std::cout<<"Server - \n \t+Message received from client ["<<message<<"]"<<std::endl;
-            sock->send(response.c_str(), response.length());
+        Packet *packet = NULL;
+        len = sock->receive(&packet, 512);
+        while(len > 0){
+            if(packet == NULL)
+                std::cout<<"Server - \n \t+Message received from client [could not decrypt packet]"<<std::endl;
+            else
+                std::cout<<"Server - \n \t+Message received from client ["<<packet->data<<"]"<<"size: "<<len<<std::endl;
+
+            len = 0;
+            break;
+
         }
         delete sock;
+        delete packet;
     }
+
     return 0;
 }
