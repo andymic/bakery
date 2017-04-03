@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: TCPConnector.h
  * @Last modified by:   andy
- * @Last modified time: 2017-03-19T12:30:08-04:00
+ * @Last modified time: 2017-04-02T19:30:56-04:00
  */
 
 #include "TCPSocket.h"
@@ -13,7 +13,7 @@
 #include<netinet/in.h>
 
 #ifndef __tcpconnector__h__
-#define __tcpsocket__h__
+#define __tcpconnector__h__
 
 class TCPConnector {
 protected:
@@ -24,6 +24,7 @@ protected:
 public:
     TCPConnector(const char * _ip, int _port);
     virtual TCPSocket* connect() = 0;
+    bool poll();
     void bind();
 };
 #endif

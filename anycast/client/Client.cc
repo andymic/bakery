@@ -5,14 +5,14 @@
  * @Project: Anycast
  * @Filename: Client.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-03-19T20:31:05-04:00
+ * @Last modified time: 2017-04-02T19:51:57-04:00
  */
 
 #include "Client.h"
 #include<iostream>
 #include<stdlib.h>
 #define TAG "Client - \n"
-Client::Client(const char *_ip, int _port) : TCPConnector(_ip, _port){
+Client::Client(const char *_ip, int _port) : Server(_ip, _port){
 
 }
 
@@ -30,4 +30,8 @@ TCPSocket* Client::connect(){
     }
     std::cout<<TAG<<"\t +connection establish to host "<<ip<<":"<<port<<std::endl;
     return new TCPSocket(sockfd, &address);
+}
+
+Client::~Client(){
+    delete server;
 }
