@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Server.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T19:55:43-04:00
+ * @Last modified time: 2017-04-09T01:23:40-04:00
  */
 
 #include "Server.h"
@@ -65,6 +65,7 @@ int Server::forward(const char * tip, int tport, Packet *packet){
             std::cout<<TAG<<"\t+message ["<<packet->data<<"]\n";
         }
         delete sock;
+        delete client;
         return len;
     }catch(std::exception &e ){
         std::cout<<TAG<<"\t+"<<e.what()<<std::endl;

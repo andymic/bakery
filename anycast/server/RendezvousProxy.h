@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: RAP.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T19:24:15-04:00
+ * @Last modified time: 2017-04-09T01:35:18-04:00
  */
 
  #include "../common/TCPSocket.h"
@@ -20,6 +20,7 @@ public:
     RendezvousProxy(const char *ip, int port);
     std::string getProxyType();
     int forwardToJoin(Packet * packet);
+    virtual ~RendezvousProxy(){};
 };
 
 
@@ -54,6 +55,6 @@ int main(int argc, char const *argv[]) {
          delete sock;
          delete packet;
      }
-
+     delete rvp;
      return 0;
  }

@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: JoinProxy.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T19:23:58-04:00
+ * @Last modified time: 2017-04-09T01:34:55-04:00
  */
 
  #include "../common/TCPSocket.h"
@@ -22,6 +22,7 @@ public:
     std::string getProxyType();
     int forwardToTarget(Packet *packet);
     int reply(Packet *packet);
+    virtual ~JoinProxy(){};
 };
 
 
@@ -60,13 +61,13 @@ public:
             //  packet->destination_ip = packet->source_ip;
             //  packet->destination_port = packet->source_port;
             //  packet->source_ip = "127.0.0.1";
-            //  packet->source_port = 60001;
+             packet->source_port = 6004;
              jap->reply(packet);
          }
 
          delete sock;
          delete packet;
      }
-
+     delete jap;
      return 0;
  }

@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: IngressProxy.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T19:58:24-04:00
+ * @Last modified time: 2017-04-09T01:37:09-04:00
  */
 
  #include "../common/TCPSocket.h"
@@ -23,6 +23,7 @@ public:
     int forwardToRap(Packet *packet);
     int forwardToClient(Packet *packet);
     int reply(Packet *packet);
+    virtual ~IngressProxy(){}
 };
 
 
@@ -54,15 +55,15 @@ int main(int argc, char const *argv[]) {
              packet->destination_ip = "127.0.0.1";
              packet->destination_port = 6002;
              igp->forwardToRap(packet);
-         }else if(packet->proxy_type == "JAP"){
-              packet->proxy_type = "IAP";
-              packet->source_port = 6004;
-              igp->forwardToClient(packet);
          }
+        //  }else if(packet->proxy_type == "JAP"){
+        //       packet->proxy_type = "IAP";
+        //       packet->source_port = 6004;
+        //       igp->forwardToClient(packet);
+        //  }
          delete sock;
          delete packet;
-
      }
-
+     delete igp;
      return 0;
  }

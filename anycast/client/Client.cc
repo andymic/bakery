@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Client.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T19:51:57-04:00
+ * @Last modified time: 2017-04-09T01:22:46-04:00
  */
 
 #include "Client.h"
@@ -33,5 +33,5 @@ TCPSocket* Client::connect(){
 }
 
 Client::~Client(){
-    delete server;
+    
 }

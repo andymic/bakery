@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: AnycastClient.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T20:02:01-04:00
+ * @Last modified time: 2017-04-09T01:36:06-04:00
  */
 
 
@@ -33,7 +33,7 @@ int main(int argc, char const *argv[]) {
     while(true){
         sock = client->accept();
         len = sock->receive(&packet, 512);
-        if(len > 0 && packet->proxy_type == "IAP"){
+        if(len > 0 && packet->proxy_type == "JAP"){
             //request served and is forwarded from TAP to JAP  to Client
             std::cout<<"Client - \n\t +reply received from TAP ["<<
             packet->data<<"]"<< "hops: "<<packet->hops<<std::endl;
@@ -42,5 +42,6 @@ int main(int argc, char const *argv[]) {
     }
     delete packet;
     delete sock;
+    delete client;
     return 0;
 }

@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Client.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T19:18:37-04:00
+ * @Last modified time: 2017-04-09T01:18:48-04:00
  */
 #include "../common/TCPSocket.h"
 #include "../server/Server.h"
@@ -34,6 +34,6 @@ private:
 public:
     Client(const char *ip, int port);
     TCPSocket* connect();
-    ~Client();
+    virtual ~Client();
 };
 #endif
