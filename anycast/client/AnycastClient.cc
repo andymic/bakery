@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: AnycastClient.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-16T19:43:42-04:00
+ * @Last modified time: 2017-04-17T03:11:04-04:00
  */
 
 
@@ -27,10 +27,11 @@ int main(int argc, char const *argv[]) {
     if(len > 0){
         std::cout<<"Client - \n\t +message["<<packet->data<<"] sent successfully\n";
     }
-    int res_port = 6004; //response port
+    int res_port = 6017; //response port
     client = new Client(argv[1], res_port);
     client->poll();
-    while(true){
+    int timeout = 30;
+    while(timeout > 0){
         sock = client->accept();
         len = sock->receive(&packet, 512);
         if(len > 0 && packet->proxy_type == "JAP"){
@@ -39,6 +40,7 @@ int main(int argc, char const *argv[]) {
             packet->data<<"]"<< "hops: "<<packet->hops<<std::endl;
             break;
         }
+        timeout--;
     }
     delete packet;
     delete sock;

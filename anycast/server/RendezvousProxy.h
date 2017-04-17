@@ -5,27 +5,28 @@
  * @Project: Anycast
  * @Filename: RAP.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-16T08:46:06-04:00
+ * @Last modified time: 2017-04-17T02:54:20-04:00
  */
 
  #include "../common/TCPSocket.h"
  #include "../common/Packet.h"
+ #include "../common/Utils.h"
  #include "Server.h"
  #include<string>
-
-struct JAPInfo{
-        int port;
-        int hops;
-};
+ #include<map>
 
 class RendezvousProxy : public Server{
 private:
     const std::string type = "RAP";
-    std::vector<JAPInfo> japs;
+    std::map<int, Node> rap, ingress, join, target;
+    Node getClosestJoin(std::string ip, int port, int &distance);
+    int getIngressId(std::string ip, int port);
 public:
     RendezvousProxy(const char *ip, int port);
     std::string getProxyType();
     int forwardToJoin(Packet * packet);
+    bool loadNetConfig(std::string path, NodeType type);
+    void printNetConfigs();
     virtual ~RendezvousProxy(){};
 };
 
@@ -33,6 +34,13 @@ public:
 int main(int argc, char const *argv[]) {
 
      RendezvousProxy * rvp = new RendezvousProxy(argv[1], atoi(argv[2]));
+     rvp->loadNetConfig("../netconfig/rap.conf", RAP);
+     rvp->loadNetConfig("../netconfig/target.conf", TARGET);
+     rvp->loadNetConfig("../netconfig/join.conf", JOIN);
+     rvp->loadNetConfig("../netconfig/ingress.conf", INGRESS);
+     //rvp->printNetConfigs();
+
+
      rvp->poll();
 
      while(true){
@@ -53,8 +61,8 @@ int main(int argc, char const *argv[]) {
          if(packet->proxy_type == "IAP"){
              //packet is coming from client
              packet->proxy_type = "RAP";
-             packet->destination_ip = "127.0.0.1";
-             packet->destination_port = 6001;
+            //  packet->destination_ip = "127.0.0.1";
+            //  packet->destination_port = 6001;
 
              rvp->forwardToJoin(packet);
          }

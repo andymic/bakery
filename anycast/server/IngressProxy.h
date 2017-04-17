@@ -5,24 +5,29 @@
  * @Project: Anycast
  * @Filename: IngressProxy.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-09T01:37:09-04:00
+ * @Last modified time: 2017-04-17T02:10:23-04:00
  */
 
  #include "../common/TCPSocket.h"
  #include "../common/Packet.h"
+ #include "../common/Utils.h"
  #include "Server.h"
+ #include<map>
  #include<string>
 
 class IngressProxy : public Server{
 private:
     const std::string type = "IAP";
-
+    std::map<int, Node> raps, ingress;
+    Node findNearestRap();
+    int lookupProxyId();
 public:
     IngressProxy(const char *ip, int port);
     std::string getProxyType();
     int forwardToRap(Packet *packet);
     int forwardToClient(Packet *packet);
     int reply(Packet *packet);
+    bool loadNetConfig(std::string path, NodeType type);
     virtual ~IngressProxy(){}
 };
 
@@ -30,6 +35,8 @@ public:
 int main(int argc, char const *argv[]) {
 
      IngressProxy * igp = new IngressProxy(argv[1], atoi(argv[2]));
+     igp->loadNetConfig("../netconfig/rap.conf", RAP);
+     igp->loadNetConfig("../netconfig/ingress.conf", INGRESS);
      igp->poll();
 
      while(true){
@@ -52,15 +59,11 @@ int main(int argc, char const *argv[]) {
              packet->proxy_type = "IAP";
              packet->forwarder_ip = igp->getIp();
              packet->forwarder_port = igp->getPort();
-             packet->destination_ip = "127.0.0.1";
-             packet->destination_port = 6002;
+            //  packet->destination_ip = "127.0.0.1";
+            //  packet->destination_port = 6002;
              igp->forwardToRap(packet);
          }
-        //  }else if(packet->proxy_type == "JAP"){
-        //       packet->proxy_type = "IAP";
-        //       packet->source_port = 6004;
-        //       igp->forwardToClient(packet);
-        //  }
+
          delete sock;
          delete packet;
      }

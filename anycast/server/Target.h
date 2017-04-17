@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Target.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-16T18:38:10-04:00
+ * @Last modified time: 2017-04-17T02:47:35-04:00
  */
 
  #include "../common/TCPSocket.h"
@@ -37,11 +37,12 @@
                  std::cout<<"TAP - \n \t+Message received from client [could not decrypt packet]"<<std::endl;
              else
                  std::cout<<"TAP - \n \t+Message received from client ["<<packet->forwarder_ip
-                 <<":"<<packet->forwarder_port<<"]"<<" size: "<<len<<std::endl;
+                 <<":"<<packet->forwarder_port<<"]"<<" size: "<<len<<" "<<packet->proxy_type<<std::endl;
 
              len = 0;
          }
          if(packet->proxy_type == "JAP"){
+             std::cout<<"replying from target>>"<<std::endl;
              //packet should only come from the Join Proxy
              packet->proxy_type = "TAP";
              packet->hops++;

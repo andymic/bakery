@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Server.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-16T20:05:57-04:00
+ * @Last modified time: 2017-04-17T02:23:00-04:00
  */
 
 #include "Server.h"
@@ -29,7 +29,7 @@ Server::Server(const char *_ip, int _port=0) : ip(_ip), port(_port){
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = (_port == 0) ? INADDR_ANY : inet_addr(ip);
     address.sin_port = htons(this->port);
-    std::cout<<TAG<<"\t +socket descriptor is "<<master_sockfd<<std::endl;
+    std::cout<<TAG<<"\t + "<<ip<<":"<<port<<" socket descriptor is "<<master_sockfd<<std::endl;
 
 }
 
