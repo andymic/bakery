@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Target.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T19:24:25-04:00
+ * @Last modified time: 2017-04-16T18:38:10-04:00
  */
 
  #include "../common/TCPSocket.h"
@@ -44,8 +44,12 @@
          if(packet->proxy_type == "JAP"){
              //packet should only come from the Join Proxy
              packet->proxy_type = "TAP";
-
-             tgt->reply(packet);
+             packet->hops++;
+             packet->data = "Here is milk...";
+             packet->hops++;
+             std::string data = packet->to_string();
+             sock->send(data.c_str(), data.length());
+             //tgt->reply(packet);
          }
 
          delete sock;

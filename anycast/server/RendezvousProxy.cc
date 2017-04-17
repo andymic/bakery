@@ -5,13 +5,13 @@
  * @Project: Anycast
  * @Filename: RendezvousProxy.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T10:03:33-04:00
+ * @Last modified time: 2017-04-16T19:53:43-04:00
  */
 
 #include "RendezvousProxy.h"
 #define TAG "RendezvousProxy-\n"
 RendezvousProxy::RendezvousProxy(const char * _ip, int _port) : Server(_ip, _port){
-
+    // JAPInfo jap1 = {6003, }
 }
 
 std::string RendezvousProxy::getProxyType(){
@@ -22,5 +22,5 @@ int RendezvousProxy::forwardToJoin(Packet *packet){
     std::cout<<TAG<<"\t+forwarding packet from ["<<packet->source_ip<<":"
     <<packet->source_port<<"]\n";
     packet->hops++;
-    return forward(packet->destination_ip.c_str(), packet->destination_port, packet);
+    return forward(packet->destination_ip.c_str(), packet->destination_port, &packet);
 }

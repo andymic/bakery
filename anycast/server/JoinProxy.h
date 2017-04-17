@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: JoinProxy.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-09T01:34:55-04:00
+ * @Last modified time: 2017-04-16T20:12:09-04:00
  */
 
  #include "../common/TCPSocket.h"
@@ -16,11 +16,11 @@
 class JoinProxy : public Server{
 private:
     const std::string type = "JAP";
-
+    std::string proxy_id;
 public:
     JoinProxy(const char *ip, int port);
     std::string getProxyType();
-    int forwardToTarget(Packet *packet);
+    int forwardToTarget(Packet **packet);
     int reply(Packet *packet);
     virtual ~JoinProxy(){};
 };
@@ -54,20 +54,23 @@ public:
              packet->destination_port = 6000;
              packet->forwarder_ip = "127.0.0.1";
              packet->forwarder_port = 6001;
-             jap->forwardToTarget(packet);
-         }else if(packet->proxy_type == "TAP"){
-             //if packet came from TAP then reply to Ingress directly
-             packet->proxy_type = "JAP";
-            //  packet->destination_ip = packet->source_ip;
-            //  packet->destination_port = packet->source_port;
-            //  packet->source_ip = "127.0.0.1";
-             packet->source_port = 6004;
-             jap->reply(packet);
-         }
+             len = jap->forwardToTarget(&packet);
 
+             if(len > 0){
+                 std::cout<<"JAP - \n\t+ got reply from local target:["<<
+                 packet->data<<"]\n";
+
+                 packet->proxy_type = "JAP";
+                 packet->source_port = 6004;
+                 jap->reply(packet);
+                 break;
+             }
+
+         }
          delete sock;
          delete packet;
      }
      delete jap;
+     std::cout<<"JAP - \n\t+shuting down...\n";
      return 0;
  }

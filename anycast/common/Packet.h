@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Packet.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T19:29:51-04:00
+ * @Last modified time: 2017-04-16T00:36:52-04:00
  */
 
 #ifndef __packet_h__
@@ -22,6 +22,7 @@ private:
 public:
     Packet(std::string value);
     Packet();
+    std::string id;
     int size;
     int hops;
     std::string proxy_type;

@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: TCPSocket.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-03-28T20:32:25-04:00
+ * @Last modified time: 2017-04-16T19:14:26-04:00
  */
 #include "TCPSocket.h"
 #include<iostream>
@@ -25,7 +25,7 @@ TCPSocket::TCPSocket(int _sockfd, struct sockaddr_in *_addr){
 }
 
 ssize_t TCPSocket::send(const char *buffer, const int len){
-    std::cout<<TAG<<"\t +sending something of size "<<len<<std::endl;
+    std::cout<<TAG<<"\t +sending packet of size "<<len<<std::endl;
     return ::send(sockfd, buffer, len, 0);
 }
 
@@ -34,7 +34,7 @@ ssize_t TCPSocket::receive(char *buffer, const int len){
 }
 
 ssize_t TCPSocket::send(const Packet *packet, const int len){
-    std::cout<<TAG<<"\t +sending something of size "<<len<<std::endl;
+    std::cout<<TAG<<"\t +sending packet of size "<<len<<std::endl;
     return ::send(sockfd, &packet, len, 0);
 }
 

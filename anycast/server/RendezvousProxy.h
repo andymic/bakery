@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: RAP.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-09T01:35:18-04:00
+ * @Last modified time: 2017-04-16T08:46:06-04:00
  */
 
  #include "../common/TCPSocket.h"
@@ -13,9 +13,15 @@
  #include "Server.h"
  #include<string>
 
+struct JAPInfo{
+        int port;
+        int hops;
+};
+
 class RendezvousProxy : public Server{
 private:
     const std::string type = "RAP";
+    std::vector<JAPInfo> japs;
 public:
     RendezvousProxy(const char *ip, int port);
     std::string getProxyType();

@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Packet.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T03:31:04-04:00
+ * @Last modified time: 2017-04-16T08:40:43-04:00
  */
 
 #include "Packet.h"
@@ -46,6 +46,7 @@ Packet::Packet(std::string value){
     }
 
     if(props.size() > 0){
+        id = props.find("id")->second;
         size = std::stoi(props.find("size")->second);
         hops = std::stoi(props.find("hops")->second);
         proxy_type = props.find("proxy_type")->second;
@@ -76,6 +77,7 @@ Packet::Packet(){
 
 std::string Packet::to_string(){
     std::ostringstream oss;
+    oss << "id=" << id <<std::endl;
     oss << "size="<< size <<std::endl;
     oss << "hops=" << hops <<std::endl;
     oss << "proxy_type="  <<proxy_type <<std::endl;

@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: IngressProxy.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T19:59:27-04:00
+ * @Last modified time: 2017-04-16T19:54:10-04:00
  */
 
 
@@ -23,11 +23,11 @@ int IngressProxy::forwardToRap(Packet *packet){
     std::cout<<TAG<<"\t+forwarding packet from ["<<packet->source_ip<<":"
     <<packet->source_port<<"]\n";
     packet->hops++;
-    return forward(packet->destination_ip.c_str(), packet->destination_port, packet);
+    return forward(packet->destination_ip.c_str(), packet->destination_port, &packet);
 }
 
 int IngressProxy::forwardToClient(Packet *packet){
     std::cout<<TAG<<"\t+forwarding packet to ["<<packet->source_ip<<":"
     <<packet->source_port<<"]\n";
-    return forward(packet->source_ip.c_str(), packet->source_port, packet);
+    return forward(packet->source_ip.c_str(), packet->source_port, &packet);
 }

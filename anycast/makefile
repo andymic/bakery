@@ -1,15 +1,25 @@
+# @Author: Michel Andy <andy>
+# @Date:   2017-04-02T19:44:52-04:00
+# @Email:  Andymic12@gmail.com
+# @Project: Anycast
+# @Filename: makefile
+# @Last modified by:   andy
+# @Last modified time: 2017-04-16T09:02:46-04:00
+
+
+
 CC			= g++
-CFLAGS		= -std=c++11 -g -c -Wall 
-LDFLAGS		= 
+CFLAGS		= -std=c++11 -g -c -Wall
+LDFLAGS		=
 SERV_SOURCES= server/Server.cc
 CLI_SOURCES = client/Client.cc
-BASE_SOURCES= common/TCPConnector.cc common/TCPSocket.cc common/Packet.cc $(SERV_SOURCES) $(CLI_SOURCES)
+BASE_SOURCES= common/TCPSocket.cc common/Packet.cc $(SERV_SOURCES) $(CLI_SOURCES)
 JAP_SOURCES = server/JoinProxy.cc
 IAP_SOURCES = server/IngressProxy.cc
 RAP_SOURCES = server/RendezvousProxy.cc
 TAP_SOURCES = server/Target.cc
 AC_SOURCES	= client/AnycastClient.cc
-INCLUDES	= -Icommon/ -Iserver/ -Iclient/ 
+INCLUDES	= -Icommon/ -Iserver/ -Iclient/
 BASE_OBJECTS= $(BASE_SOURCES:.cc=.o)
 SERV_OBJECTS= $(SERV_SOURCES:.cc=.o)
 JAP_OBJECTS = $(JAP_SOURCES:.cc=.o)
@@ -53,4 +63,3 @@ clean:
 	       $(IAP_OBJECTS) $(RAP_OBJECTS) $(JAP_OBJECTS)\
 		   $(TAP_OBJECTS) $(AC_OBJECTS) $(SERVER) $(CLIENT)\
 		   $(JAP) $(IAP) $(RAP) $(TAP)
-

@@ -5,31 +5,41 @@
  * @Project: Anycast
  * @Filename: Server.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-02T19:50:15-04:00
+ * @Last modified time: 2017-04-16T19:52:13-04:00
  */
 
-#include "../common/TCPConnector.h"
 #include "../common/TCPSocket.h"
 #include "../common/Packet.h"
 #include<iostream>
 #include<stdlib.h>
+#include<sys/time.h>
+#include<vector>
+#include<netinet/in.h>
 
 #ifndef __server__h__
 #define __server__h__
 
-class Server: public TCPConnector {
-private:
-    int newsockfd;
+class Server{
+protected:
+    const char *ip;
+    int port;
+    int master_sockfd;
+    int new_sockfd;
+    int max_connections;
+    std::vector<int> sockets;
+    fd_set readfds;
+    int max_sockfd;
+    struct sockaddr_in address;
     void listen();
-
 public:
-    Server(const char *ip, int port);
+    Server(const char *_ip, int port);
+    void bind();
     bool poll();
     TCPSocket* connect(){return NULL;};
     TCPSocket* accept();
     std::string getIp();
     int getPort();
-    int forward(const char * tip, int tport, Packet *packet);
+    int forward(const char * tip, int tport, Packet **packet, bool wait=false);
     virtual ~Server() = 0;
 };
 
