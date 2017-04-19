@@ -5,14 +5,14 @@
  * @Project: Anycast
  * @Filename: RendezvousProxy.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-17T02:55:54-04:00
+ * @Last modified time: 2017-04-19T10:49:13-04:00
  */
 
 #include "RendezvousProxy.h"
 #include <fstream>
 #include <limits.h>
 #define TAG "RendezvousProxy-\n\t+"
-RendezvousProxy::RendezvousProxy(const char * _ip, int _port) : Server(_ip, _port){
+RendezvousProxy::RendezvousProxy(const char * _ip, int _port, bool _verbose) : Server(_ip, _port, _verbose){
     // JAPInfo jap1 = {6003, }
 }
 
@@ -21,17 +21,22 @@ std::string RendezvousProxy::getProxyType(){
 }
 
 int RendezvousProxy::getIngressId(std::string ip, int port){
-    std::cout<<TAG<<"looking up ingress by id...\n";
+    if(verbose)
+        std::cout<<TAG<<"looking up ingress by id...\n";
+
     for(auto& i: ingress){
         if(i.second.ip == ip && i.second.port == port){
             return i.first;
         }
     }
-    std::cout<<TAG<<"ingress proxy is not part of the network\n";
+    if(verbose)
+        std::cout<<TAG<<"ingress proxy is not part of the network\n";
     return 0;
 }
 Node RendezvousProxy::getClosestJoin(std::string ip, int port, int &distance){
-    std::cout<<TAG<<"looking up closest join proxy...\n";
+    if(verbose)
+        std::cout<<TAG<<"looking up closest join proxy...\n";
+
     int ingress_id = getIngressId(ip, port);
     int node_id;
     if(ingress_id != 0){
@@ -44,7 +49,9 @@ Node RendezvousProxy::getClosestJoin(std::string ip, int port, int &distance){
             }
         }
         distance = min_distance;
-        std::cout<<TAG<<"closest join proxy id: "<<node_id<<std::endl;
+        if(verbose)
+            std::cout<<TAG<<"closest join proxy id: "<<node_id<<std::endl;
+
         return join.at(node_id);
     }
     Node t ={"", 0};
@@ -59,8 +66,10 @@ int RendezvousProxy::forwardToJoin(Packet *packet){
     join = getClosestJoin(packet->forwarder_ip, packet->forwarder_port, distance);
 
     if(join.ip != "" && join.port != 0){
-        std::cout<<TAG<<"forwarding packet from ["<<packet->source_ip<<":"
-        <<packet->source_port<<"] to closest join proxy\n";
+        if(verbose){
+            std::cout<<TAG<<"forwarding packet from ["<<packet->source_ip<<":"
+            <<packet->source_port<<"] to closest join proxy\n";
+        }
 
         //distance == 0, indicates that the join is local so the packet is forwarded without a cost
         if(distance > 0)
@@ -71,7 +80,8 @@ int RendezvousProxy::forwardToJoin(Packet *packet){
         return forward(packet->destination_ip.c_str(), packet->destination_port, &packet);
     }
 
-    std::cout<<TAG<<"could not find nearest join\n";
+    if(verbose)
+        std::cout<<TAG<<"could not find nearest join\n";
     return 0;
 }
 bool RendezvousProxy::loadNetConfig(std::string path, NodeType type){

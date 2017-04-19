@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Packet.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-16T08:40:43-04:00
+ * @Last modified time: 2017-04-19T10:25:13-04:00
  */
 
 #include "Packet.h"
@@ -57,6 +57,7 @@ Packet::Packet(std::string value){
         destination_port = std::stoi(props.find("destination_port")->second);
         forwarder_ip = props.find("forwarder_ip")->second;
         forwarder_port = std::stoi(props.find("forwarder_port")->second);
+        error = std::stoi(props.find("error")->second);
     }
 }
 
@@ -72,7 +73,7 @@ Packet::Packet(){
     destination_port = 0;
     forwarder_ip = "";
     forwarder_port = 0;
-
+    error = 0;
 }
 
 std::string Packet::to_string(){
@@ -88,6 +89,7 @@ std::string Packet::to_string(){
     oss << "destination_port=" << destination_port <<std::endl;
     oss << "forwarder_ip=" << forwarder_ip <<std::endl;
     oss << "forwarder_port=" << forwarder_port <<std::endl;
+    oss << "error=" <<error<<std::endl;
     return oss.str();
 }
 

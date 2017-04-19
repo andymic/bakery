@@ -5,45 +5,78 @@
  * @Project: Anycast
  * @Filename: AnycastClient.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-17T03:11:04-04:00
+ * @Last modified time: 2017-04-19T11:14:03-04:00
  */
 
 
 #include "Client.h"
 #include "../common/TCPSocket.h"
 #include "../common/Packet.h"
+#include "../common/Utils.h"
+#include<vector>
+#include<map>
+#include<string>
+
+#define TAG "Client - \n\t +"
+bool loadIngressConf(std::string path, std::map<int,Node> &ingress_nodes){
+    Utils utils;
+    bool status = false;
+    ingress_nodes = utils.loadConfig(path, INGRESS, status);
+
+    if(!status)
+        return false;
+
+    return true;
+}
 
 int main(int argc, char const *argv[]) {
-    Client * client = new Client(argv[1], atoi(argv[2]));
-    TCPSocket *sock = client->connect();
     Packet *packet = new Packet();
-    packet->source_ip = argv[1];
-    packet->source_port = atoi(argv[2]);
-    packet->proxy_type = "Client";
-    packet->data = "I made tea";
-    std::string value = packet->to_string();
+    std::map<int,Node> ingress_nodes;
+    if(loadIngressConf("../netconfig/ingress.conf", ingress_nodes)){
+        std::cout<<TAG<<"found "<<ingress_nodes.size()<<" ingress nodes...will send packet from "
+        <<ingress_nodes.size()<<" ips"<<std::endl;
+        //Response port for the client
+        int res_port = 6017; //response port
+        Client * resp_client = new Client(argv[1], res_port);
+        resp_client->poll();
 
-    int len = sock->send(value.c_str(), value.length());
-    if(len > 0){
-        std::cout<<"Client - \n\t +message["<<packet->data<<"] sent successfully\n";
-    }
-    int res_port = 6017; //response port
-    client = new Client(argv[1], res_port);
-    client->poll();
-    int timeout = 30;
-    while(timeout > 0){
-        sock = client->accept();
-        len = sock->receive(&packet, 512);
-        if(len > 0 && packet->proxy_type == "JAP"){
-            //request served and is forwarded from TAP to JAP  to Client
-            std::cout<<"Client - \n\t +reply received from TAP ["<<
-            packet->data<<"]"<< "hops: "<<packet->hops<<std::endl;
-            break;
+        for(auto& in : ingress_nodes){
+            Client * client = new Client(argv[1], in.second.port);
+            TCPSocket *sock = client->connect();
+            packet->source_ip = in.second.ip;
+            packet->source_port = in.second.port;
+            packet->proxy_type = "Client";
+            packet->data = "PING";
+            packet->hops = 0;
+            std::string value = packet->to_string();
+
+            int len = sock->send(value.c_str(), value.length());
+            if(len > 0){
+                std::cout<<TAG<<"message["<<packet->data<<"] sent successfully\n";
+            }
+
+            //In case a process is hangs or packet is dropp...times out after 5 ticks
+            int timeout = 3;
+            while(timeout > 0){
+                TCPSocket*  resp_sock = resp_client->accept();
+                len = resp_sock->receive(&packet, 512);
+                if(len > 0 && packet->proxy_type == "JAP"){
+                    //request served and is forwarded from TAP to JAP  to Client
+                    std::cout<< "\033[32m" <<TAG<<"reply received from TAP ["<<
+                    packet->data<<"]"<< " hops: "<<packet->hops<<std::endl;
+                    std::cout<<"\033[39m";
+                    break;
+                }
+                timeout--;
+            }
+            delete sock;
+            delete client;
         }
-        timeout--;
+    }else{
+        std::cerr<<TAG<<"could not load ingress ips\n";
     }
+
     delete packet;
-    delete sock;
-    delete client;
+
     return 0;
 }

@@ -5,12 +5,12 @@
  * @Project: Anycast
  * @Filename: JoinProxy.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-17T03:08:34-04:00
+ * @Last modified time: 2017-04-19T10:46:47-04:00
  */
 
 #include "JoinProxy.h"
 #define TAG "JoinProxy -\n\t+"
-JoinProxy::JoinProxy(const char *_ip, int _port): Server(_ip, _port){
+JoinProxy::JoinProxy(const char *_ip, int _port, bool _verbose): Server(_ip, _port, _verbose){
 }
 
 std::string JoinProxy::getProxyType(){
@@ -37,17 +37,17 @@ Node JoinProxy::findLocalTarget(){
 
     for(auto& j: joins){
         //looking up the id of the join proxy to calculate the distance
+        if(verbose)
+            std::cout<<TAG<<ip<<port<< " conf: "<<j.second.ip<<j.second.port<<std::endl;
 
-        std::cout<<TAG<<ip<<port<< " conf: "<<j.second.ip<<j.second.port<<std::endl;
         if(j.second.ip == ip && j.second.port == port){
             id = j.first;
         }
     }
-    std::cout<<TAG<<"server id: "<<id<<std::endl;
     it = targets.find(id);
 
     if(it == targets.end()){
-        std::cerr<<TAG<<"could not find local target!!\n";
+        std::cerr<<TAG<<"could not find local target id: "<<id<<"!!\n";
         Node t = {"", 0};
         return t;
     }
@@ -56,7 +56,6 @@ Node JoinProxy::findLocalTarget(){
 int JoinProxy::forwardToTarget(Packet **packet){
     Node local_target = findLocalTarget();
     if(local_target.ip == "" && local_target.port == 0){
-        std::cout<<TAG<<"could not find local target!!\n";
         return 0;
     }
 
@@ -66,14 +65,19 @@ int JoinProxy::forwardToTarget(Packet **packet){
     (*packet)->forwarder_ip = ip;
     (*packet)->forwarder_port = port;
     (*packet)->hops++;
-    std::cout<<TAG<<"\t+forwarding packet from ["<<(*packet)->source_ip<<":"
-    <<(*packet)->source_port<<"] "<<(*packet)->proxy_type<<"\n";
+
+    if(verbose){
+        std::cout<<TAG<<"\t+forwarding packet from ["<<(*packet)->source_ip<<":"
+        <<(*packet)->source_port<<"] "<<(*packet)->proxy_type<<"\n";
+    }
     return forward((*packet)->destination_ip.c_str(), (*packet)->destination_port, packet, true);
 }
 
 int JoinProxy::reply(Packet *packet){
-    std::cout<<TAG<<"\t+forwarding packet from ["<<packet->source_ip<<":"
-    <<packet->source_port<<"]\n";
+    if(verbose){
+        std::cout<<TAG<<"\t+forwarding packet from ["<<packet->source_ip<<":"
+        <<packet->source_port<<"]\n";
+    }
     packet->hops++;
     return forward(packet->source_ip.c_str(), packet->source_port, &packet);
 }

@@ -5,7 +5,7 @@
 # @Project: Anycast
 # @Filename: demo.sh
 # @Last modified by:   andy
-# @Last modified time: 2017-04-17T03:11:48-04:00
+# @Last modified time: 2017-04-19T11:10:36-04:00
 
 
 
@@ -13,8 +13,8 @@
 #build all
 make all
 
-TEMP_DIR="temp"
-mkdir temp
+TEMP_DIR=".tmp"
+mkdir $TEMP_DIR
 
 trap cleanup INT
 declare -a binaries=(
@@ -38,16 +38,16 @@ rap5
 
 function cleanup(){
     # cleaning up
-    echo "*** killing servers ***"
+    echo "*** Shutting down $1 servers ***"
     # cleaning up
     for i in ${binaries[@]}
     do
-        pkill -9 "$i" &> /dev/null
+        pkill "$i"
     done
 }
 
 #In case the servers are bound to the ports
-cleanup
+cleanup "any existing"
 
 # creating two target proxies
 mv target $TEMP_DIR/target1
@@ -86,6 +86,7 @@ sleep 1
 #start servers
 ./target1 127.0.0.1 6000 &
 ./target4 127.0.0.1 6001 &
+./target6 127.0.0.1 6002 &
 
 ./joinproxy1 127.0.0.1 6003 &
 ./joinproxy4 127.0.0.1 6004 &
@@ -113,5 +114,5 @@ sleep 1
 popd > /dev/null
 
 rm -rf $TEMP_DIR
-make clean
-cleanup
+#make clean
+cleanup "created"

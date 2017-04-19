@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Server.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-17T02:23:00-04:00
+ * @Last modified time: 2017-04-19T10:38:31-04:00
  */
 
 #include "Server.h"
@@ -19,7 +19,7 @@
 #include<algorithm>
 #define TAG "Server - \n"
 
-Server::Server(const char *_ip, int _port=0) : ip(_ip), port(_port){
+Server::Server(const char *_ip, int _port=0, bool _verbose) : ip(_ip), port(_port), verbose(_verbose){
     max_connections = 15;
     sockets.resize(max_connections);
     std::fill(sockets.begin(), sockets.end(), 0);
@@ -29,7 +29,8 @@ Server::Server(const char *_ip, int _port=0) : ip(_ip), port(_port){
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = (_port == 0) ? INADDR_ANY : inet_addr(ip);
     address.sin_port = htons(this->port);
-    std::cout<<TAG<<"\t + "<<ip<<":"<<port<<" socket descriptor is "<<master_sockfd<<std::endl;
+    if(verbose)
+        std::cout<<TAG<<"\t + "<<ip<<":"<<port<<" socket descriptor is "<<master_sockfd<<std::endl;
 
 }
 
@@ -65,7 +66,8 @@ TCPSocket* Server::accept(){
         std::cerr<<TAG<<"\t +failed to accept connection\n";
         std::exit(EXIT_FAILURE);
     }
-    std::cout<<TAG<<"\t +accepting connections...new socket descriptor is: "<<new_sockfd<<std::endl;
+    if(verbose)
+        std::cout<<TAG<<"\t +accepting connections...new socket descriptor is: "<<new_sockfd<<std::endl;
     return new TCPSocket(new_sockfd, &address);
 }
 
@@ -79,10 +81,14 @@ int Server::getPort(){
 
 int Server::forward(const char * tip, int tport, Packet **packet, bool wait){
     try{
-        std::cout<<TAG<<"\t+Trying to forward packet to local Target ["<<tip<<":"<<tport<<"]\n";
+        if(verbose)
+            std::cout<<TAG<<"\t+Trying to forward packet to local Target ["<<tip<<":"<<tport<<"]\n";
         Client * client = new Client(tip, tport);
         TCPSocket * sock = client->connect();
-        std::cout<<TAG<<"\t+succeffully connected target server\n";
+
+        if(verbose)
+            std::cout<<TAG<<"\t+succeffully connected target server\n";
+
         std::string data = (*packet)->to_string();
         int len = sock->send(data.c_str(), data.length());
 
@@ -92,21 +98,27 @@ int Server::forward(const char * tip, int tport, Packet **packet, bool wait){
             std::cerr<<TAG<<"\t+data loss: packet size "<<data.length()
             <<" but transmitted size "<<len<<std::endl;
         }else{
-            std::cout<<TAG<<"\t+succeffully sent packet of size "<<len
-            <<" to "<<tip<<":"<<tport<<std::endl;
-            std::cout<<TAG<<"\t+message ["<<(*packet)->data<<"]\n";
+            if(verbose){
+                std::cout<<TAG<<"\t+succeffully sent packet of size "<<len
+                <<" to "<<tip<<":"<<tport<<std::endl;
+                std::cout<<TAG<<"\t+message ["<<(*packet)->data<<"]\n";
+            }
         }
 
         if(wait){
-            std::cout<<TAG<<"\t+ waiting for reply...\n";
+            if(verbose)
+                std::cout<<TAG<<"\t+ waiting for reply...\n";
+
             while(true){
                 len  = 0;
                 len = sock->receive(packet, 1024);
 
                 if(len > 0){
-                    std::cout<<TAG<<"\t+received: "<<len<<std::endl;
-                    std::cout<<TAG<<" data : \n";
-                    std::cout<<TAG<<"\t+message ["<<(*packet)->data<<"]\n";
+                    if(verbose){
+                        std::cout<<TAG<<"\t+received: "<<len<<std::endl;
+                        std::cout<<TAG<<" data : \n";
+                        std::cout<<TAG<<"\t+message ["<<(*packet)->data<<"]\n";
+                    }
                     break;
                 }
             }

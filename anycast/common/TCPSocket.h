@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: TCPSocket.h
  * @Last modified by:   andy
- * @Last modified time: 2017-03-28T18:42:18-04:00
+ * @Last modified time: 2017-04-19T10:39:35-04:00
  */
 #include<string.h>
 #include "Packet.h"
@@ -25,9 +25,10 @@ private:
     int sockfd;
     const char *ip;
     int port;
+    bool verbose;
     // Packet translate_packet(void *packet);
 public:
-    TCPSocket(int _sockfd, struct sockaddr_in *_addr);
+    TCPSocket(int _sockfd, struct sockaddr_in *_addr, bool verbose = false);
     ssize_t send(const char *buffer, const int len);
     ssize_t receive(char *buffer, const int len);
     ssize_t send(const Packet *packet, const int len);

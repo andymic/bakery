@@ -5,12 +5,12 @@
  * @Project: Anycast
  * @Filename: Target.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-17T00:21:12-04:00
+ * @Last modified time: 2017-04-19T10:50:52-04:00
  */
 
 #include "Target.h"
 
-Target::Target(const char * _ip, int _port): Server(_ip, _port){
+Target::Target(const char * _ip, int _port, bool _verbose): Server(_ip, _port, _verbose){
 
 }
 

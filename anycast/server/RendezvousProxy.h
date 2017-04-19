@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: RAP.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-17T02:54:20-04:00
+ * @Last modified time: 2017-04-19T11:02:33-04:00
  */
 
  #include "../common/TCPSocket.h"
@@ -21,8 +21,9 @@ private:
     std::map<int, Node> rap, ingress, join, target;
     Node getClosestJoin(std::string ip, int port, int &distance);
     int getIngressId(std::string ip, int port);
+    bool verbose;
 public:
-    RendezvousProxy(const char *ip, int port);
+    RendezvousProxy(const char *ip, int port, bool verbose = false);
     std::string getProxyType();
     int forwardToJoin(Packet * packet);
     bool loadNetConfig(std::string path, NodeType type);
@@ -51,9 +52,11 @@ int main(int argc, char const *argv[]) {
          if(len > 0){
              if(packet == NULL)
                  std::cout<<"RAP - \n \t+Message received from client [could not decrypt packet]"<<std::endl;
-             else
-                 std::cout<<"IAP - \n \t+Message received from client ["<<packet->source_ip
+             else{
+                 std::cout<<"\033[33mRAP - \n \t+Message received from client ["<<packet->source_ip
                  <<":"<<packet->source_port<<"]"<<" size: "<<len<<std::endl;
+                 std::cout<<"\033[39m";
+             }
 
              len = 0;
          }
@@ -69,6 +72,7 @@ int main(int argc, char const *argv[]) {
          delete sock;
          delete packet;
      }
+     std::cout<<"IAP - \n \t+shutting down...\n";
      delete rvp;
      return 0;
  }

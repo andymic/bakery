@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Server.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-16T19:52:13-04:00
+ * @Last modified time: 2017-04-19T10:35:01-04:00
  */
 
 #include "../common/TCPSocket.h"
@@ -31,8 +31,9 @@ protected:
     int max_sockfd;
     struct sockaddr_in address;
     void listen();
+    bool verbose;
 public:
-    Server(const char *_ip, int port);
+    Server(const char *_ip, int port, bool verbose=false);
     void bind();
     bool poll();
     TCPSocket* connect(){return NULL;};

@@ -5,15 +5,14 @@
  * @Project: Anycast
  * @Filename: IngressProxy.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-17T02:34:29-04:00
+ * @Last modified time: 2017-04-19T10:52:33-04:00
  */
 
 
 #include "IngressProxy.h"
 #include <limits.h>
 #define TAG "IngressProxy-\n\t+"
-IngressProxy::IngressProxy(const char * _ip, int _port) : Server(_ip, _port){
-
+IngressProxy::IngressProxy(const char * _ip, int _port, bool _verbose) : Server(_ip, _port, _verbose){
 }
 
 std::string IngressProxy::getProxyType(){
@@ -21,12 +20,12 @@ std::string IngressProxy::getProxyType(){
 }
 
 bool IngressProxy::loadNetConfig(std::string path, NodeType type){
-    Utils utls;
+    Utils utils;
     bool status = false;
     if(type == RAP)
-        raps = utls.loadConfig(path, type, status);
+        raps = utils.loadConfig(path, type, status);
     else if(type == INGRESS)
-        ingress = utls.loadConfig(path, type, status);
+        ingress = utils.loadConfig(path, type, status);
     else
         return false;
 
@@ -34,8 +33,7 @@ bool IngressProxy::loadNetConfig(std::string path, NodeType type){
 }
 
 int IngressProxy::lookupProxyId(){
-    Utils utls;
-    utls.printConfig(ingress, INGRESS);
+
     for(auto& i: ingress){
         if(i.second.ip == ip && i.second.port == port){
             return i.first;
@@ -43,8 +41,9 @@ int IngressProxy::lookupProxyId(){
     }
     return 0;
 }
-Node IngressProxy::findNearestRap(){
-    std::cout<<TAG<<"looking up nearest rap...\n";
+Node IngressProxy::findNearestRap(int &distance){
+    if(verbose)
+        std::cout<<TAG<<"looking up nearest rap...\n";
     int id  = lookupProxyId();
     int rap_id;
 
@@ -57,6 +56,9 @@ Node IngressProxy::findNearestRap(){
                 rap_id = r.first;
             }
         }
+        if(verbose)
+            std::cout<<TAG<<"closest rap is "<<min_distance<<" hops away\n"<<std::endl;
+        distance = min_distance;
         return raps.at(rap_id);
     }
     Node t = {"", 0};
@@ -64,11 +66,17 @@ Node IngressProxy::findNearestRap(){
 }
 
 int IngressProxy::forwardToRap(Packet *packet){
-    Node n = findNearestRap();
+    int distance;
+    Node n = findNearestRap(distance);
     if(n.ip != "" || n.port != 0){
-        std::cout<<TAG<<"+forwarding packet from ["<<packet->source_ip<<":"
-        <<packet->source_port<<"] to closest RAP\n";
-        packet->hops++;
+        if(verbose){
+            std::cout<<TAG<<"forwarding packet from ["<<packet->source_ip<<":"
+            <<packet->source_port<<"] to closest RAP\n";
+        }
+        //not a local rap
+        if(distance > 0)
+            packet->hops++;
+
         packet->destination_ip = n.ip;
         packet->destination_port = n.port;
         return forward(packet->destination_ip.c_str(), packet->destination_port, &packet);
@@ -79,7 +87,9 @@ int IngressProxy::forwardToRap(Packet *packet){
 }
 
 int IngressProxy::forwardToClient(Packet *packet){
-    std::cout<<TAG<<"\t+forwarding packet to ["<<packet->source_ip<<":"
-    <<packet->source_port<<"]\n";
+    if(verbose){
+        std::cout<<TAG<<"\t+forwarding packet to ["<<packet->source_ip<<":"
+        <<packet->source_port<<"]\n";
+    }
     return forward(packet->source_ip.c_str(), packet->source_port, &packet);
 }

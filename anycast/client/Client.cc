@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Client.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-16T18:25:39-04:00
+ * @Last modified time: 2017-04-19T10:54:22-04:00
  */
 
 #include "Client.h"
@@ -13,7 +13,7 @@
 #include<stdlib.h>
 #include<unistd.h>
 #define TAG "Client - \n"
-Client::Client(const char *_ip, int _port) : Server(_ip, _port){
+Client::Client(const char *_ip, int _port, bool _verbose) : Server(_ip, _port, _verbose){
 
 }
 
@@ -29,7 +29,9 @@ TCPSocket* Client::connect(){
         std::cerr<<TAG<<"\t +could not connect host\n";
         exit(EXIT_FAILURE);
     }
-    std::cout<<TAG<<"\t +connection establish to host "<<ip<<":"<<port<<std::endl;
+    if(verbose)
+        std::cout<<TAG<<"\t +connection establish to host "<<ip<<":"<<port<<std::endl;
+        
     return new TCPSocket(master_sockfd, &address);
 }
 

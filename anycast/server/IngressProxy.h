@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: IngressProxy.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-17T02:10:23-04:00
+ * @Last modified time: 2017-04-19T11:03:12-04:00
  */
 
  #include "../common/TCPSocket.h"
@@ -19,10 +19,11 @@ class IngressProxy : public Server{
 private:
     const std::string type = "IAP";
     std::map<int, Node> raps, ingress;
-    Node findNearestRap();
+    Node findNearestRap(int & distance);
     int lookupProxyId();
+    bool verbose;
 public:
-    IngressProxy(const char *ip, int port);
+    IngressProxy(const char *ip, int port, bool verbose = false);
     std::string getProxyType();
     int forwardToRap(Packet *packet);
     int forwardToClient(Packet *packet);
@@ -34,7 +35,7 @@ public:
 
 int main(int argc, char const *argv[]) {
 
-     IngressProxy * igp = new IngressProxy(argv[1], atoi(argv[2]));
+     IngressProxy * igp = new IngressProxy(argv[1], atoi(argv[2]), false);
      igp->loadNetConfig("../netconfig/rap.conf", RAP);
      igp->loadNetConfig("../netconfig/ingress.conf", INGRESS);
      igp->poll();
@@ -47,9 +48,11 @@ int main(int argc, char const *argv[]) {
          if(len > 0){
              if(packet == NULL)
                  std::cout<<"IAP - \n \t+Message received from client [could not decrypt packet]"<<std::endl;
-             else
-                 std::cout<<"IAP - \n \t+Message received from client ["<<packet->source_ip
+             else{
+                 std::cout<<"\033[36mIAP - \n \t+Message received from client ["<<packet->source_ip
                  <<":"<<packet->source_port<<"]"<<" size: "<<len<<std::endl;
+                 std::cout<<"\033[39m";
+             }
 
              len = 0;
          }
@@ -67,6 +70,8 @@ int main(int argc, char const *argv[]) {
          delete sock;
          delete packet;
      }
+     std::cout<<"IAP - \n \t+shutting down...\n";
      delete igp;
+
      return 0;
  }

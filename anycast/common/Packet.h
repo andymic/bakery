@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Packet.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-16T00:36:52-04:00
+ * @Last modified time: 2017-04-19T10:24:29-04:00
  */
 
 #ifndef __packet_h__
@@ -34,6 +34,7 @@ public:
     std::string forwarder_ip;
     int forwarder_port;
     std::string to_string();
+    int error;
     ~Packet();
 };
 

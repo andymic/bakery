@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: Client.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-09T01:18:48-04:00
+ * @Last modified time: 2017-04-19T10:53:46-04:00
  */
 #include "../common/TCPSocket.h"
 #include "../server/Server.h"
@@ -31,8 +31,9 @@ namespace patch
 class Client : public Server{
 private:
     struct hostent *server;
+    bool verbose;
 public:
-    Client(const char *ip, int port);
+    Client(const char *ip, int port, bool verbose = false);
     TCPSocket* connect();
     virtual ~Client();
 };

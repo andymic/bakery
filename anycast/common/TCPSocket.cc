@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: TCPSocket.cc
  * @Last modified by:   andy
- * @Last modified time: 2017-04-16T19:14:26-04:00
+ * @Last modified time: 2017-04-19T10:53:19-04:00
  */
 #include "TCPSocket.h"
 #include<iostream>
@@ -15,17 +15,20 @@
 #include<string>
 #define TAG "TCPSocket - \n"
 
-TCPSocket::TCPSocket(int _sockfd, struct sockaddr_in *_addr){
+TCPSocket::TCPSocket(int _sockfd, struct sockaddr_in *_addr, bool _verbose){
+    verbose = _verbose;
     char _ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(_addr->sin_addr), _ip, INET_ADDRSTRLEN);
     ip = _ip;
     sockfd = _sockfd;
     port = ntohs(_addr->sin_port);
-    std::cout<<TAG<<"\t +new TCPSocket created\n";
+    if(verbose)
+        std::cout<<TAG<<"\t +new TCPSocket created\n";
 }
 
 ssize_t TCPSocket::send(const char *buffer, const int len){
-    std::cout<<TAG<<"\t +sending packet of size "<<len<<std::endl;
+    if(verbose)
+        std::cout<<TAG<<"\t +sending packet of size "<<len<<std::endl;
     return ::send(sockfd, buffer, len, 0);
 }
 
@@ -34,7 +37,8 @@ ssize_t TCPSocket::receive(char *buffer, const int len){
 }
 
 ssize_t TCPSocket::send(const Packet *packet, const int len){
-    std::cout<<TAG<<"\t +sending packet of size "<<len<<std::endl;
+    if(verbose)
+        std::cout<<TAG<<"\t +sending packet of size "<<len<<std::endl;
     return ::send(sockfd, &packet, len, 0);
 }
 

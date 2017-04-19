@@ -5,7 +5,7 @@
  * @Project: Anycast
  * @Filename: JoinProxy.h
  * @Last modified by:   andy
- * @Last modified time: 2017-04-17T03:08:31-04:00
+ * @Last modified time: 2017-04-19T11:12:09-04:00
  */
 
  #include "../common/TCPSocket.h"
@@ -21,8 +21,9 @@ private:
     std::string proxy_id;
     std::map<int, Node> targets, joins;
     Node findLocalTarget();
+    bool verbose;
 public:
-    JoinProxy(const char *ip, int port);
+    JoinProxy(const char *ip, int port, bool verbose = false);
     std::string getProxyType();
     bool loadNetConfig(std::string path, NodeType type);
     int forwardToTarget(Packet **packet);
@@ -33,7 +34,7 @@ public:
 
  int main(int argc, char const *argv[]) {
 
-     JoinProxy * jap = new JoinProxy(argv[1], atoi(argv[2]));
+     JoinProxy * jap = new JoinProxy(argv[1], atoi(argv[2]), false);
      jap->loadNetConfig("../netconfig/join.conf", JOIN);
      jap->loadNetConfig("../netconfig/target.conf", TARGET);
      jap->poll();
@@ -46,8 +47,10 @@ public:
          while(len > 0){
              if(packet == NULL)
                  std::cout<<"JAP - \n \t+Message received from client [could not decrypt packet]"<<std::endl;
-             else
-                 std::cout<<"JAP - \n \t+Message received from client size: "<<len<<std::endl;
+             else{
+                 std::cout<<"\033[35mJAP - \n \t+Message received from client size: "<<len<<std::endl;
+                 std::cout<<"\033[39m";
+             }
 
              len = 0;
          }
@@ -60,12 +63,13 @@ public:
              len = jap->forwardToTarget(&packet);
 
              if(len > 0){
-                 std::cout<<"JAP - \n\t+ got reply from local target:["<<
+                 std::cout<<"JAP - \n\t+reply from local target:["<<
                  packet->data<<"]\n";
                  packet->proxy_type = "JAP";
                 packet->source_port = 6017;
                  jap->reply(packet);
-                 break;
+             }else{
+                 std::cout<<"JAP - \n\t+ process idle nothing to do!!"<<std::endl;
              }
 
          }
