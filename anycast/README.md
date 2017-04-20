@@ -31,4 +31,4 @@ Custom config: update the netconfig files and anycast_demo script accordingly
 **Refer to paper for more information on how to configure network**
 
 
-![example](https://raw.githubusercontent.com/Andymic/bakery/anycast/anycast.png)
+![Alt text](https://raw.githubusercontent.com/Andymic/bakery/master/anycast/anycast.png "Oops!!")
