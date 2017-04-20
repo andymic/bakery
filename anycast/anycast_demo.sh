@@ -3,9 +3,9 @@
 # @Date:   2017-04-16T00:40:30-04:00
 # @Email:  Andymic12@gmail.com
 # @Project: Anycast
-# @Filename: demo.sh
+# @Filename: anycast_demo.sh
 # @Last modified by:   andy
-# @Last modified time: 2017-04-19T11:10:36-04:00
+# @Last modified time: 2017-04-19T20:58:03-04:00
 
 
 
@@ -84,15 +84,18 @@ cp igp1 igp8
 
 sleep 1
 #start servers
+
+#target.conf
 ./target1 127.0.0.1 6000 &
 ./target4 127.0.0.1 6001 &
 ./target6 127.0.0.1 6002 &
 
+#join.conf
 ./joinproxy1 127.0.0.1 6003 &
 ./joinproxy4 127.0.0.1 6004 &
 ./joinproxy6 127.0.0.1 6005 &
 
-
+#ingress.conf
 ./igp1 127.0.0.1 6006 &
 ./igp2 127.0.0.1 6007 &
 ./igp3 127.0.0.1 6008 &
@@ -101,6 +104,8 @@ sleep 1
 ./igp6 127.0.0.1 6011 &
 ./igp7 127.0.0.1 6012 &
 ./igp8 127.0.0.1 6013 &
+
+#rap.conf
 ./rap1 127.0.0.1 6014 &
 ./rap5 127.0.0.1 6015 &
 
