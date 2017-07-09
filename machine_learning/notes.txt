@@ -1,0 +1,1 @@
+create new kernel: python3.5 -m ipykernel install --user --name ml --display-name "Python3.5 (ml)"
